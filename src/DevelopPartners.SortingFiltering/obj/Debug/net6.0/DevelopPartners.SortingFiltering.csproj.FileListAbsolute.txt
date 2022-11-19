@@ -1,0 +1,12 @@
+C:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\bin\Debug\net6.0\DevelopPartners.SortingFiltering.deps.json
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\bin\Debug\net6.0\DevelopPartners.SortingFiltering.dll
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\bin\Debug\net6.0\DevelopPartners.SortingFiltering.pdb
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\DevelopPartners.SortingFiltering.csproj.AssemblyReference.cache
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\DevelopPartners.SortingFiltering.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\DevelopPartners.SortingFiltering.AssemblyInfoInputs.cache
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\DevelopPartners.SortingFiltering.AssemblyInfo.cs
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\DevelopPartners.SortingFiltering.csproj.CoreCompileInputs.cache
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\DevelopPartners.SortingFiltering.dll
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\refint\DevelopPartners.SortingFiltering.dll
+c:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\DevelopPartners.SortingFiltering.pdb
+C:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\obj\Debug\net6.0\ref\DevelopPartners.SortingFiltering.dll

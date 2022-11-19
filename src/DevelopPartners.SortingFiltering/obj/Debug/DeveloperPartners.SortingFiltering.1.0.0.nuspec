@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>DeveloperPartners.SortingFiltering</id>
+    <version>1.0.0</version>
+    <authors>Developer Partners, Inc.</authors>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="AutoMapper" version="10.1.1" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Identity.EntityFrameworkCore" version="6.0.10" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.AspNetCore.Mvc.Core" version="2.2.5" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="C:\Users\hayks\source\repos\DeveloperPartners\Libraries\SortingFiltering\src\DevelopPartners.SortingFiltering\bin\Debug\net6.0\DevelopPartners.SortingFiltering.dll" target="lib\net6.0\DevelopPartners.SortingFiltering.dll" />
+  </files>
+</package>
