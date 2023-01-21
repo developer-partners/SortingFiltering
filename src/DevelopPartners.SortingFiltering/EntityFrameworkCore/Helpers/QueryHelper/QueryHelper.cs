@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
+namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHelper
 {
     static class QueryHelper
     {
@@ -353,6 +353,16 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
             return null;
         }
 
+        private static Expression GetNullQueryExpression(QueryProperty propertyQuery, Expression propertyAccessExpression)
+        {
+            if (propertyQuery.ComparisonOperator == ComparisonOperator.NotEq)
+            {
+                return Expression.NotEqual(propertyAccessExpression, Expression.Constant(null));
+            }
+
+            return Expression.Equal(propertyAccessExpression, Expression.Constant(null));
+        }
+
         private static Expression GetOtherQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (propertyQuery.ComparisonOperator == ComparisonOperator.NotEq)
@@ -365,6 +375,11 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
 
         private static Expression GetQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
+            if (propertyQuery.IsValueNull)
+            {
+                return GetNullQueryExpression(propertyQuery, propertyAccessExpression);
+            }
+
             if (propertyDescriptor.QueryableProperty.UnderlyingPropertyType == typeof(string))
             {
                 return GetStringQueryExpression(propertyQuery, propertyAccessExpression);
@@ -419,7 +434,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
 
         private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, QueryProperty propertyQuery, Expression parentExpression)
         {
-            if (propertyQuery != null && !string.IsNullOrWhiteSpace(propertyQuery.Value))
+            if (propertyQuery != null && (!string.IsNullOrWhiteSpace(propertyQuery.Value) || propertyQuery.IsValueNull))
             {
                 if (string.IsNullOrWhiteSpace(propertyQuery.ColumnName))
                 {
@@ -481,59 +496,6 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
         }
     }
 
-    class PropertyDescriptor
-    {
-        private Lazy<QueryablePropertyDescriptor> _queryableProperty;
-
-        public string Path { get; set; }
-        public Type OwnerObjectType { get; set; }
-        public PropertyInfo Property { get; set; }
-        public PropertyDescriptor Child { get; set; }
-
-        public QueryablePropertyDescriptor QueryableProperty
-        {
-            get
-            {
-                return _queryableProperty.Value;
-            }
-        }
-
-        public PropertyDescriptor()
-        {
-            _queryableProperty = new Lazy<QueryablePropertyDescriptor>(GetQueryableProperty);
-        }
-
-        private QueryablePropertyDescriptor GetQueryableProperty()
-        {
-            if (this.Child == null)
-            {
-                return new QueryablePropertyDescriptor(this.Property);
-            }
-
-            return this.Child.GetQueryableProperty();
-        }
-    }
-
-    class QueryablePropertyDescriptor
-    {
-        public Type PropertyType { get; set; }
-        public Type UnderlyingPropertyType { get; private set; }
-
-        public bool IsNullable
-        {
-            get
-            {
-                return this.PropertyType.IsNullable();
-            }
-        }
-
-        public QueryablePropertyDescriptor(PropertyInfo propertyInfo)
-        {
-            this.PropertyType = propertyInfo.PropertyType;
-            this.UnderlyingPropertyType = Nullable.GetUnderlyingType(propertyInfo.PropertyType) ?? propertyInfo.PropertyType;
-        }
-    }
-
     class WrappedObj<TValue>
     {
         public TValue Value { get; set; }
@@ -548,58 +510,5 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
     {
         public Expression Left { get; set; }
         public Expression Right { get; set; }
-    }
-
-    class QueryExpressionDescriptor<TSource>
-    {
-        public QueryProperty QueryProperty { get; set; }
-        public Expression Expression { get; set; }
-        public List<QueryExpressionDescriptor<TSource>> Children { get; set; }
-
-        private Expression GetChildrenExpression(IEnumerable<QueryExpressionDescriptor<TSource>> children)
-        {
-            Expression resultExpression = null;
-
-            foreach (var child in children)
-            {
-                if (resultExpression != null)
-                {
-                    resultExpression = child.QueryProperty.LogicalOperator == LogicalOperator.And
-                      ? Expression.AndAlso(resultExpression, child.Expression)
-                      : Expression.OrElse(resultExpression, child.Expression);
-                }
-                else
-                {
-                    resultExpression = child.Expression;
-                }
-
-                if (!child.Children.IsNullOrEmpty())
-                {
-                    resultExpression = FlattenHierarchy(resultExpression, children);
-                }
-            }
-
-            return resultExpression;
-        }
-
-        private Expression FlattenHierarchy(Expression expression, IEnumerable<QueryExpressionDescriptor<TSource>> children)
-        {
-            if (!children.IsNullOrEmpty())
-            {
-                var childrenExpression = GetChildrenExpression(children);
-
-                if (childrenExpression != null)
-                {
-                    return Expression.AndAlso(expression, childrenExpression);
-                }
-            }
-
-            return expression;
-        }
-
-        public Expression FlattenHierarchy()
-        {
-            return FlattenHierarchy(this.Expression, this.Children);
-        }
     }
 }

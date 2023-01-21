@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers;
+using DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHelper;
 
 namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore
 {

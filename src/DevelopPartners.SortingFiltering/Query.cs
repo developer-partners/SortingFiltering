@@ -54,6 +54,12 @@ namespace DeveloperPartners.SortingFiltering
         public string Value { get; set; }
 
         /// <summary>
+        /// Tells if the <see cref="Value">Value</see> Property should be checked against database NULL.
+        /// </summary>
+        /// <value>True if value should be checked for database NULL. False if value should not be checked against database NULL.</value>
+        public bool IsValueNull { get; set; }
+
+        /// <summary>
         /// Comparison operator such as Equals, StartsWith, EndsWith, Contains etc..
         /// </summary>
         [FromQuery(Name = "op")]
