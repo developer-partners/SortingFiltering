@@ -57,6 +57,7 @@ namespace DeveloperPartners.SortingFiltering
         /// Tells if the <see cref="Value">Value</see> Property should be checked against database NULL.
         /// </summary>
         /// <value>True if value should be checked for database NULL. False if value should not be checked against database NULL.</value>
+        [FromQuery(Name = "null")]
         public bool IsValueNull { get; set; }
 
         /// <summary>
