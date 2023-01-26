@@ -141,7 +141,8 @@ namespace DeveloperPartners.SortingFiltering.AutoMapper
                     ComparisonOperator = property.ComparisonOperator,
                     LogicalOperator = property.LogicalOperator,
                     Value = property.Value,
-                    Children = ConvertFilterProperties(mapper, typeMap, property.Children, property)
+                    Children = ConvertFilterProperties(mapper, typeMap, property.Children, property),
+                    IsValueNull = property.IsValueNull
                 });
             }
 
