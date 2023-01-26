@@ -357,10 +357,10 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
         {
             if (propertyQuery.ComparisonOperator == ComparisonOperator.NotEq)
             {
-                return Expression.NotEqual(propertyAccessExpression, CreatePropertyExpresison(null, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
+                return Expression.NotEqual(Expression.Convert(propertyAccessExpression, typeof(object)), Expression.Constant(null));
             }
 
-            return Expression.Equal(propertyAccessExpression, CreatePropertyExpresison(null, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
+            return Expression.Equal(Expression.Convert(propertyAccessExpression, typeof(object)), Expression.Constant(null));
         }
 
         private static Expression GetOtherQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
