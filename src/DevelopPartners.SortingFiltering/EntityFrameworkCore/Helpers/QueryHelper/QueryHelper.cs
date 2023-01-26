@@ -353,14 +353,14 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static Expression GetNullQueryExpression(QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static Expression GetNullQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (propertyQuery.ComparisonOperator == ComparisonOperator.NotEq)
             {
-                return Expression.NotEqual(propertyAccessExpression, Expression.Constant(null));
+                return Expression.NotEqual(propertyAccessExpression, CreatePropertyExpresison(null, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
             }
 
-            return Expression.Equal(propertyAccessExpression, Expression.Constant(null));
+            return Expression.Equal(propertyAccessExpression, CreatePropertyExpresison(null, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
         }
 
         private static Expression GetOtherQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
@@ -377,7 +377,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
         {
             if (propertyQuery.IsValueNull)
             {
-                return GetNullQueryExpression(propertyQuery, propertyAccessExpression);
+                return GetNullQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
             }
 
             if (propertyDescriptor.QueryableProperty.UnderlyingPropertyType == typeof(string))
