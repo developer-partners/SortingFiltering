@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AutoMapper;
+using AutoMapper.Internal;
 
 namespace DeveloperPartners.SortingFiltering.AutoMapper
 {
@@ -13,6 +14,7 @@ namespace DeveloperPartners.SortingFiltering.AutoMapper
         {
             var nestedMap = mapper
               .ConfigurationProvider
+              .Internal()
               .FindTypeMapFor(propertyMap.SourceType, propertyMap.DestinationType);
 
             if (nestedMap != null)
@@ -112,6 +114,7 @@ namespace DeveloperPartners.SortingFiltering.AutoMapper
         {
             var typeMap = mapper
                 .ConfigurationProvider
+                .Internal()
                 .FindTypeMapFor<TModel, TDto>();
 
             if (typeMap != null)
@@ -155,6 +158,7 @@ namespace DeveloperPartners.SortingFiltering.AutoMapper
         {
             var typeMap = mapper
                 .ConfigurationProvider
+                .Internal()
                 .FindTypeMapFor<TModel, TDto>();
 
             if (typeMap != null)

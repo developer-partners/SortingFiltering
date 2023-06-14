@@ -34,13 +34,25 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore
         public static IQueryable<T> Paginate<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo)
             where T : class
         {
-            return PaginationHelper.Paginate(itemList, pageInfo);
+            return PaginationHelper.Paginate(itemList, pageInfo, default);
+        }
+
+        public static IQueryable<T> Paginate<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo, int pageSize)
+            where T : class
+        {
+            return PaginationHelper.Paginate(itemList, pageInfo, pageSize);
         }
 
         public static Task<IQueryable<T>> PaginateAsync<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo)
             where T : class
         {
-            return PaginationHelper.PaginateAsync(itemList, pageInfo);
+            return PaginationHelper.PaginateAsync(itemList, pageInfo, default);
+        }
+
+        public static Task<IQueryable<T>> PaginateAsync<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo, int pageSize)
+           where T : class
+        {
+            return PaginationHelper.PaginateAsync(itemList, pageInfo, pageSize);
         }
     }
 }

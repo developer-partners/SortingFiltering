@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
 {
-    static class PaginationHelper
+    internal class PaginationHelper
     {
-        public static IQueryable<T> Paginate<T>(IOrderedQueryable<T> itemList, PageInfo pageInfo)
+        public static IQueryable<T> Paginate<T>(IOrderedQueryable<T> itemList, PageInfo pageInfo, int? pageSize)
             where T : class
         {
             if (pageInfo.PageNumber <= 0)
@@ -15,7 +15,11 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
                 pageInfo.PageNumber = PageInfo.DefaultPageNumber;
             }
 
-            if (pageInfo.PageSize > PageInfo.MaxPageSize || pageInfo.PageSize <= 0)
+            if (pageSize.HasValue)
+            {
+                pageInfo.PageSize = pageSize.Value;
+            }
+            else if (pageInfo.PageSize > PageInfo.MaxPageSize || pageInfo.PageSize <= 0)
             {
                 pageInfo.PageSize = PageInfo.DefaultPageSize;
             }
@@ -33,7 +37,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
                 .Take(pageInfo.PageSize);
         }
 
-        public static async Task<IQueryable<T>> PaginateAsync<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo)
+        internal static async Task<IQueryable<T>> PaginateAsync<T>(IOrderedQueryable<T> itemList, PageInfo pageInfo, int? pageSize)
             where T : class
         {
             if (pageInfo.PageNumber <= 0)
@@ -41,7 +45,11 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
                 pageInfo.PageNumber = PageInfo.DefaultPageNumber;
             }
 
-            if (pageInfo.PageSize > PageInfo.MaxPageSize || pageInfo.PageSize <= 0)
+            if (pageSize.HasValue)
+            {
+                pageInfo.PageSize = pageSize.Value;
+            }
+            else if (pageInfo.PageSize > PageInfo.MaxPageSize || pageInfo.PageSize <= 0)
             {
                 pageInfo.PageSize = PageInfo.DefaultPageSize;
             }
