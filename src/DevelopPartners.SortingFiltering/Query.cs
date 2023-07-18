@@ -1,6 +1,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DeveloperPartners.SortingFiltering
@@ -81,6 +82,9 @@ namespace DeveloperPartners.SortingFiltering
         /// <summary>
         /// Use this in C# code only. Do not use this when calling APIs.
         /// </summary>
+        [XmlIgnore]
+        [Newtonsoft.Json.JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public object ParsedValue
         {
             get
