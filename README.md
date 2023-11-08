@@ -132,3 +132,67 @@ using (var context = new AppDbContext())
     }
 }
 ```
+
+## Filtering
+
+The `Query.Filter` property is a lit of `QueryProperty` objects. You can have multiple filtering conditions by adding multiple `QueryProperty` objects to the `Query.Filter` list.
+
+```
+using Microsoft.EntityFrameworkCore;
+using DeveloperPartners.SortingFiltering.EntityFrameworkCore;
+
+using (var context = new AppDbContext())
+{
+    var query = new Query();
+
+    query.Filter.AddRange(new []
+    {
+        new QueryProperty
+        {
+            ColumnName = "Name",
+            Value = "iPhone",
+            ComparisonOperator = ComparisonOperator.Ct
+        },
+        new QueryProperty
+        {
+            ColumnName = "UnitPrice",
+            Value = "1000",
+            ComparisonOperator = ComparisonOperator.Lte
+        }
+    });
+
+    var products = await context
+        .Products
+        .Where(query.Filter)
+        .ToListAsync();
+}
+```
+
+The query above returns products where Name contains the word "iPhone" and UnitPrice is less than or equal to 1,000.
+
+## Using as Query String Parameters
+
+The real power of `DeveloperPartners.SortingFiltering` comes when using `PageInfo` and `Query` as query string parameters of API endpoints. Let's take a look at the following endpoint:
+
+```
+public async Task<IActionResult> GetAllProductsAsync([FromQuery] PageInfo pageInfo, [Query] query)
+{
+    var products = await _context
+        .Products
+        .Where(query.Filter)
+        .OrderBy(query.Sort)
+        .Pageinate(pageInfo)
+        .ToListAsync();
+
+    var pagedData = products.ToPagedData(pageInfo);
+
+    return Ok(pagedData);
+}
+```
+
+You can call the endpoint above with the following URL and query string parameters:
+```
+/api/products?pageNumber=2&pageSize=25&s[DateCreated]=Desc&s[Name]=Asc&q[0].col=Name&q[0].op=Ct&q[0].val=iPhone
+```
+
+The query string above translates to "Get products where Name contains "iPhone". Sort by DateCreated in descending order, then by Name in ascending order. Paginate the data with page size of 25 and get the data of the second page."
