@@ -175,7 +175,7 @@ The query above returns products where Name contains the word "iPhone" and UnitP
 The real power of `DeveloperPartners.SortingFiltering` comes when using `PageInfo` and `Query` as query string parameters of API endpoints. Let's take a look at the following endpoint:
 
 ```
-public async Task<IActionResult> GetAllProductsAsync([FromQuery] PageInfo pageInfo, [Query] query)
+public async Task<IActionResult> GetAllProductsAsync([FromQuery] PageInfo pageInfo, [FromQuery] Query query)
 {
     var products = await _context
         .Products
