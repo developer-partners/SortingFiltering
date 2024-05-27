@@ -196,3 +196,10 @@ You can call the endpoint above with the following URL and query string paramete
 ```
 
 The query string above translates to "Get products where Name contains "iPhone". Sort by DateCreated in descending order, then by Name in ascending order. Paginate the data with page size of 25 and get the data of the second page."
+
+
+## Credits
+Developer Partners, Inc.
+
+[https://developerpartners.com](https://developerpartners.com)
+
