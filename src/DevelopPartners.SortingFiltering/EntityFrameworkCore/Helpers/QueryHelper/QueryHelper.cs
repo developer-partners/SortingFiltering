@@ -115,9 +115,9 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static MemberExpression GetExpression(PropertyDescriptor propertyDescriptor, Expression parentExpression)
+        private static Expression GetExpression(PropertyDescriptor propertyDescriptor, Expression parentExpression)
         {
-            var expression = Expression.Property(parentExpression, propertyDescriptor.Property.Name);
+            Expression expression = Expression.Property(parentExpression, propertyDescriptor.Property.Name);
 
             if (propertyDescriptor.Child != null)
             {
@@ -128,7 +128,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
             if (propertyDescriptor.QueryableProperty.IsNullable)
             {
-                expression = Expression.Property(expression, nameof(Nullable<int>.Value));
+                expression = Expression.Convert(expression, propertyDescriptor.QueryableProperty.UnderlyingPropertyType);
             }
 
             return expression;

@@ -98,7 +98,7 @@ namespace DeveloperPartners.SortingFiltering
             }
             set
             {
-                this.Value = value.ToString();
+                this.Value = value?.ToString();
             }
         }
 

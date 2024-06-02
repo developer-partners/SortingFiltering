@@ -77,14 +77,18 @@ namespace DeveloperPartners.SortingFiltering
             {
                 if (value.GetType() == typeof(string))
                 {
-                    return Enum.Parse(typeToChange, value.ToString());
+                    if (Enum.TryParse(typeToChange, value.ToString(), out var result))
+                    {
+                        return result;
+                    }
+
+                    return Enum.ToObject(typeToChange, -1);
                 }
 
                 return Enum.ToObject(typeToChange, value);
             }
 
-            // 0 is default for all enums. Try to get the default enum if value is null.
-            return Enum.ToObject(typeToChange, 0);
+            return Enum.ToObject(typeToChange, -1);
         }
 
         public static object ChangeType(this Type t, object value)
