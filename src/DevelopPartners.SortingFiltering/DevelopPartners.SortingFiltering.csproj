@@ -6,7 +6,7 @@
     <Nullable>disable</Nullable>
 
     <PackageId>DeveloperPartners.SortingFiltering</PackageId>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
     <Authors>Developer Partners, Inc.</Authors>
     <Company>Developer Partners, Inc.</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
