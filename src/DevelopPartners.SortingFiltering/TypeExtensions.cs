@@ -114,6 +114,20 @@ namespace DeveloperPartners.SortingFiltering
                 return t.ParseEnum(value);
             }
 
+            if (typeToChange == typeof(DateOnly))
+            {
+                return value != null
+                    ? DateOnly.Parse(value.ToString())
+                    : default;
+            }
+
+            if (typeToChange == typeof(DateOnly?))
+            {
+                return value != null
+                    ? DateOnly.Parse(value.ToString())
+                    : default(DateOnly?);
+            }
+
             return value == null
                 ? null
                 : Convert.ChangeType(value, typeToChange);
