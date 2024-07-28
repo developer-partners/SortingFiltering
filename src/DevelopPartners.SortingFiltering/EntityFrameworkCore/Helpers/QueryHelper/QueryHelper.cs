@@ -235,7 +235,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return Expression.Equal(propertyAccessExpression, CreatePropertyExpresison(propertyQuery.Value));
         }
 
-        private static ExpressionHelper GetNumbericExpressionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static ExpressionHelper GetNumericExpressionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (!decimal.TryParse(propertyQuery.Value, out var test))
             {
@@ -286,7 +286,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
         private static Expression GetNumericQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
-            var numericHelper = GetNumbericExpressionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
+            var numericHelper = GetNumericExpressionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
 
             if (numericHelper != null)
             {
@@ -310,44 +310,61 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static ExpressionHelper GetDateExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static DateExpressionHelper GetDateExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression, TimeZoneInfo clientTimeZone)
         {
-            if (!DateTime.TryParse(propertyQuery.Value, out var test))
+            if (DateTime.TryParse(propertyQuery.Value, out var dateValue))
             {
-                return null;
+                var utcOffset = clientTimeZone.GetUtcOffset(DateTime.UtcNow);
+                var utcOfsetMinutes = -1 * utcOffset.TotalMinutes;
+
+                var startTime = dateValue.Date.AddMinutes(utcOfsetMinutes);
+                var endTime = dateValue.Date.AddDays(1).AddSeconds(-1).AddMinutes(utcOfsetMinutes);
+
+                return new DateExpressionHelper
+                {
+                    StartTime = new ExpressionHelper
+                    {
+                        Left = propertyAccessExpression,
+                        Right = CreatePropertyExpresison(startTime, propertyDescriptor.QueryableProperty.UnderlyingPropertyType)
+                    },
+                    EndTime = new ExpressionHelper
+                    {
+                        Left = propertyAccessExpression,
+                        Right = CreatePropertyExpresison(endTime, propertyDescriptor.QueryableProperty.UnderlyingPropertyType)
+                    }
+                };
             }
 
-            var left = Expression.Property(propertyAccessExpression, nameof(DateTime.Date));
-            var right = Expression.Property(CreatePropertyExpresison(propertyQuery.ParsedValue, propertyDescriptor.QueryableProperty.UnderlyingPropertyType), nameof(DateTime.Date));
-
-            return new ExpressionHelper
-            {
-                Left = left,
-                Right = right
-            };
+            return null;
         }
 
-        private static Expression GetDateQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static Expression GetDateQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression, TimeZoneInfo clientTimeZone)
         {
-            var dateHelper = GetDateExpresionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
+            var dateHelper = GetDateExpresionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression, clientTimeZone);
 
             if (dateHelper != null)
             {
                 switch (propertyQuery.ComparisonOperator)
                 {
                     case ComparisonOperator.Lt:
-                        return Expression.LessThan(dateHelper.Left, dateHelper.Right);
+                        return Expression.LessThan(dateHelper.StartTime.Left, dateHelper.StartTime.Right);
                     case ComparisonOperator.Lte:
-                        return Expression.LessThanOrEqual(dateHelper.Left, dateHelper.Right);
+                        return Expression.LessThanOrEqual(dateHelper.EndTime.Left, dateHelper.EndTime.Right);
                     case ComparisonOperator.Gt:
-                        return Expression.GreaterThan(dateHelper.Left, dateHelper.Right);
+                        return Expression.GreaterThan(dateHelper.EndTime.Left, dateHelper.EndTime.Right);
                     case ComparisonOperator.Gte:
-                        return Expression.GreaterThanOrEqual(dateHelper.Left, dateHelper.Right);
+                        return Expression.GreaterThanOrEqual(dateHelper.StartTime.Left, dateHelper.StartTime.Right);
                     case ComparisonOperator.NotEq:
-                        return Expression.NotEqual(dateHelper.Left, dateHelper.Right);
+                        return Expression.OrElse(
+                            Expression.LessThan(dateHelper.StartTime.Left, dateHelper.StartTime.Right),
+                            Expression.GreaterThan(dateHelper.EndTime.Left, dateHelper.EndTime.Right)
+                        );
                 }
 
-                return Expression.Equal(dateHelper.Left, dateHelper.Right);
+                return Expression.AndAlso(
+                    Expression.GreaterThanOrEqual(dateHelper.StartTime.Left, dateHelper.StartTime.Right),
+                    Expression.LessThanOrEqual(dateHelper.EndTime.Left, dateHelper.EndTime.Right)
+                );
             }
 
             return null;
@@ -373,7 +390,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return Expression.Equal(propertyAccessExpression, CreatePropertyExpresison(propertyQuery.ParsedValue, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
         }
 
-        private static Expression GetQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static Expression GetQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression, TimeZoneInfo clientTimeZone)
         {
             if (propertyQuery.IsValueNull)
             {
@@ -392,20 +409,20 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
             if (propertyDescriptor.QueryableProperty.UnderlyingPropertyType == typeof(DateTime))
             {
-                return GetDateQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
+                return GetDateQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression, clientTimeZone);
             }
 
             return GetOtherQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
         }
 
-        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression parentExpression)
+        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression parentExpression, TimeZoneInfo clientTimeZone)
         {
             var propertyAccessExpression = GetExpression(propertyDescriptor, parentExpression);
 
             var expressionDescriptor = new QueryExpressionDescriptor<TSource>
             {
                 QueryProperty = propertyQuery,
-                Expression = GetQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression)
+                Expression = GetQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression, clientTimeZone)
             };
 
             if (!propertyQuery.Children.IsNullOrEmpty())
@@ -420,7 +437,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                         child.ColumnName = propertyQuery.ColumnName;
                     }
 
-                    var childExpression = GetQueryDescriptor<TSource>(tableType, child, parentExpression);
+                    var childExpression = GetQueryDescriptor<TSource>(tableType, child, parentExpression, clientTimeZone);
 
                     if (childExpression != null)
                     {
@@ -432,7 +449,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return expressionDescriptor;
         }
 
-        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, QueryProperty propertyQuery, Expression parentExpression)
+        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, QueryProperty propertyQuery, Expression parentExpression, TimeZoneInfo clientTimeZone)
         {
             if (propertyQuery != null && (!string.IsNullOrWhiteSpace(propertyQuery.Value) || propertyQuery.IsValueNull))
             {
@@ -445,7 +462,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
                 if (property != null)
                 {
-                    var descriptor = GetQueryDescriptor<TSource>(tableType, property, propertyQuery, parentExpression);
+                    var descriptor = GetQueryDescriptor<TSource>(tableType, property, propertyQuery, parentExpression, clientTimeZone);
 
                     if (descriptor?.Expression != null)
                     {
@@ -478,11 +495,12 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             if (!filter.IsNullOrEmpty())
             {
                 var tableType = typeof(T);
-
                 var parentExpression = Expression.Parameter(tableType);
 
+                var clientTimeZone = filter.ClientTimeZone ?? TimeZoneInfo.Utc;
+
                 var expressionDescriptors = filter
-                  .Select(f => GetQueryDescriptor<T>(tableType, f, parentExpression))
+                  .Select(queryProperty => GetQueryDescriptor<T>(tableType, queryProperty, parentExpression, clientTimeZone))
                   .Where(e => e != null);
 
                 if (!expressionDescriptors.IsNullOrEmpty())
@@ -510,5 +528,11 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
     {
         public Expression Left { get; set; }
         public Expression Right { get; set; }
+    }
+
+    class DateExpressionHelper
+    {
+        public ExpressionHelper StartTime { get; set; }
+        public ExpressionHelper EndTime { get; set; }
     }
 }

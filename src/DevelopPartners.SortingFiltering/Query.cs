@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
@@ -35,6 +36,11 @@ namespace DeveloperPartners.SortingFiltering
     /// </summary>
     public class QueryFilter : List<QueryProperty>
     {
+        /// <summary>
+        /// Sets the time zone to convert the database date and time columns to when filtering data.
+        /// </summary>
+        /// <value></value>
+        public TimeZoneInfo ClientTimeZone { get; set; }
     }
 
     /// <summary>

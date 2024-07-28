@@ -5,17 +5,22 @@ using DeveloperPartners.SortingFiltering.EntityFrameworkCore;
 namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.QueryableExtensions
 {
     [TestClass]
-    public class WhereTests
+    public class NullTests
     {
-        [TestMethod]
-        public async Task Where_EqualNull()
+        private AppDbContext CreateDContext()
         {
-            //create In Memory Database
             var options = new DbContextOptionsBuilder<AppDbContext>()
                 .UseInMemoryDatabase(databaseName: "SortingFilteringDb")
                 .Options;
 
-            using (var context = new AppDbContext(options))
+            return new AppDbContext(options);
+        }
+
+        [TestMethod]
+        public async Task Equal()
+        {
+            //create In Memory Database
+            using (var context = CreateDContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -51,14 +56,10 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         }
 
         [TestMethod]
-        public async Task Where_NotEqualNull()
+        public async Task NotEqual()
         {
             //create In Memory Database
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "SortingFilteringDb")
-                .Options;
-
-            using (var context = new AppDbContext(options))
+            using (var context = CreateDContext())
             {
                 context.Products.AddRange(
                     new Product
