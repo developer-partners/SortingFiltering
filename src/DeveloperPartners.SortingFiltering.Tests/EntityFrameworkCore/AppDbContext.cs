@@ -37,6 +37,8 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore
         public ProductType Type { get; set; }
 
         public DateTime DateCreated { get; set; }
+
+        public DateTime? DueDate { get; set; }
     }
 
     public class ProductType

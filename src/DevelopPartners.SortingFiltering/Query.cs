@@ -36,11 +36,6 @@ namespace DeveloperPartners.SortingFiltering
     /// </summary>
     public class QueryFilter : List<QueryProperty>
     {
-        /// <summary>
-        /// Sets the time zone to convert the database date and time columns to when filtering data.
-        /// </summary>
-        /// <value></value>
-        public TimeZoneInfo ClientTimeZone { get; set; }
     }
 
     /// <summary>
@@ -53,6 +48,14 @@ namespace DeveloperPartners.SortingFiltering
         /// </summary>
         [FromQuery(Name = "col")]
         public string ColumnName { get; set; }
+
+        /// <summary>
+        /// <para>Gets or sets the client time zone for filtering date and time columns. The default is UTC.</para>
+        /// <para>Please set this only if you need to filter by non-UTC date parameter, but the database date column contains UTC data</para>
+        /// <para>For example, DateCreated contains UTC values, and you want to get the records where DateCreated equals to 01/01/2024 in america/los_angeles time. </para>
+        /// </summary>
+        /// <value></value>
+        public TimeZoneInfo ClientTimeZone { get; set; } = TimeZoneInfo.Utc;
 
         /// <summary>
         /// Value of this query parameter.

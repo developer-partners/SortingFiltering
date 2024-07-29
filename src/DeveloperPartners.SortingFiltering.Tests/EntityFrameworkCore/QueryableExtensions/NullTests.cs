@@ -10,7 +10,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         private AppDbContext CreateDContext()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "SortingFilteringDb")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString("N"))
                 .Options;
 
             return new AppDbContext(options);

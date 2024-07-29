@@ -10,7 +10,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         private AppDbContext CreateDContext()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "SortingFilteringDb")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString("N"))
                 .Options;
 
             return new AppDbContext(options);
@@ -77,12 +77,11 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
                         new QueryProperty
                         {
                             ColumnName = nameof(Product.DateCreated),
-                            ParsedValue = DateTime.Now
+                            ParsedValue = DateTime.Now,
+                            ClientTimeZone = TimeZoneInfo.Local
                         }
                     }
                 };
-
-                query.Filter.ClientTimeZone = TimeZoneInfo.Local;
 
                 var products = await context.Products.Where(query.Filter).ToListAsync();
 
@@ -153,12 +152,11 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
                         {
                             ColumnName = nameof(Product.DateCreated),
                             ParsedValue = DateTime.Now,
-                            ComparisonOperator = ComparisonOperator.NotEq
+                            ComparisonOperator = ComparisonOperator.NotEq,
+                            ClientTimeZone = TimeZoneInfo.Local
                         }
                     }
                 };
-
-                query.Filter.ClientTimeZone = TimeZoneInfo.Local;
 
                 var products = await context.Products.Where(query.Filter).ToListAsync();
 
@@ -229,12 +227,11 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
                         {
                             ColumnName = nameof(Product.DateCreated),
                             ParsedValue = DateTime.Now,
-                            ComparisonOperator = ComparisonOperator.Gt
+                            ComparisonOperator = ComparisonOperator.Gt,
+                            ClientTimeZone = TimeZoneInfo.Local
                         }
                     }
                 };
-
-                query.Filter.ClientTimeZone = TimeZoneInfo.Local;
 
                 var products = await context.Products.Where(query.Filter).ToListAsync();
 
@@ -313,12 +310,11 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
                         {
                             ColumnName = nameof(Product.DateCreated),
                             ParsedValue = DateTime.Now,
-                            ComparisonOperator = ComparisonOperator.Gte
+                            ComparisonOperator = ComparisonOperator.Gte,
+                            ClientTimeZone = TimeZoneInfo.Local
                         }
                     }
                 };
-
-                query.Filter.ClientTimeZone = TimeZoneInfo.Local;
 
                 var products = await context.Products.Where(query.Filter).ToListAsync();
 
@@ -390,12 +386,11 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
                         {
                             ColumnName = nameof(Product.DateCreated),
                             ParsedValue = DateTime.Now,
-                            ComparisonOperator = ComparisonOperator.Lt
+                            ComparisonOperator = ComparisonOperator.Lt,
+                            ClientTimeZone = TimeZoneInfo.Local
                         }
                     }
                 };
-
-                query.Filter.ClientTimeZone = TimeZoneInfo.Local;
 
                 var products = await context.Products.Where(query.Filter).ToListAsync();
 
@@ -474,12 +469,11 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
                         {
                             ColumnName = nameof(Product.DateCreated),
                             ParsedValue = DateTime.Now,
-                            ComparisonOperator = ComparisonOperator.Lte
+                            ComparisonOperator = ComparisonOperator.Lte,
+                            ClientTimeZone = TimeZoneInfo.Local
                         }
                     }
                 };
-
-                query.Filter.ClientTimeZone = TimeZoneInfo.Local;
 
                 var products = await context.Products.Where(query.Filter).ToListAsync();
 

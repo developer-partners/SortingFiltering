@@ -310,10 +310,12 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static DateExpressionHelper GetDateExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression, TimeZoneInfo clientTimeZone)
+        private static DateExpressionHelper GetDateExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (DateTime.TryParse(propertyQuery.Value, out var dateValue))
             {
+                var clientTimeZone = propertyQuery.ClientTimeZone ?? TimeZoneInfo.Utc;
+
                 var utcOffset = clientTimeZone.GetUtcOffset(DateTime.UtcNow);
                 var utcOfsetMinutes = -1 * utcOffset.TotalMinutes;
 
@@ -338,9 +340,9 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static Expression GetDateQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression, TimeZoneInfo clientTimeZone)
+        private static Expression GetDateQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
-            var dateHelper = GetDateExpresionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression, clientTimeZone);
+            var dateHelper = GetDateExpresionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
 
             if (dateHelper != null)
             {
@@ -390,7 +392,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return Expression.Equal(propertyAccessExpression, CreatePropertyExpresison(propertyQuery.ParsedValue, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
         }
 
-        private static Expression GetQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression, TimeZoneInfo clientTimeZone)
+        private static Expression GetQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (propertyQuery.IsValueNull)
             {
@@ -409,20 +411,20 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
             if (propertyDescriptor.QueryableProperty.UnderlyingPropertyType == typeof(DateTime))
             {
-                return GetDateQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression, clientTimeZone);
+                return GetDateQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
             }
 
             return GetOtherQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
         }
 
-        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression parentExpression, TimeZoneInfo clientTimeZone)
+        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression parentExpression)
         {
             var propertyAccessExpression = GetExpression(propertyDescriptor, parentExpression);
 
             var expressionDescriptor = new QueryExpressionDescriptor<TSource>
             {
                 QueryProperty = propertyQuery,
-                Expression = GetQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression, clientTimeZone)
+                Expression = GetQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression)
             };
 
             if (!propertyQuery.Children.IsNullOrEmpty())
@@ -437,7 +439,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                         child.ColumnName = propertyQuery.ColumnName;
                     }
 
-                    var childExpression = GetQueryDescriptor<TSource>(tableType, child, parentExpression, clientTimeZone);
+                    var childExpression = GetQueryDescriptor<TSource>(tableType, child, parentExpression);
 
                     if (childExpression != null)
                     {
@@ -449,7 +451,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return expressionDescriptor;
         }
 
-        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, QueryProperty propertyQuery, Expression parentExpression, TimeZoneInfo clientTimeZone)
+        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, QueryProperty propertyQuery, Expression parentExpression)
         {
             if (propertyQuery != null && (!string.IsNullOrWhiteSpace(propertyQuery.Value) || propertyQuery.IsValueNull))
             {
@@ -462,7 +464,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
                 if (property != null)
                 {
-                    var descriptor = GetQueryDescriptor<TSource>(tableType, property, propertyQuery, parentExpression, clientTimeZone);
+                    var descriptor = GetQueryDescriptor<TSource>(tableType, property, propertyQuery, parentExpression);
 
                     if (descriptor?.Expression != null)
                     {
@@ -497,10 +499,8 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                 var tableType = typeof(T);
                 var parentExpression = Expression.Parameter(tableType);
 
-                var clientTimeZone = filter.ClientTimeZone ?? TimeZoneInfo.Utc;
-
                 var expressionDescriptors = filter
-                  .Select(queryProperty => GetQueryDescriptor<T>(tableType, queryProperty, parentExpression, clientTimeZone))
+                  .Select(queryProperty => GetQueryDescriptor<T>(tableType, queryProperty, parentExpression))
                   .Where(e => e != null);
 
                 if (!expressionDescriptors.IsNullOrEmpty())
