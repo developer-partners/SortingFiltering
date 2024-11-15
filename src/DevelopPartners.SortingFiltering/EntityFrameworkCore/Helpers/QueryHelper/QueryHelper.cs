@@ -68,7 +68,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
               : itemList.OrderByDescending(expression);
         }
 
-        private static PropertyInfo GetPropertyIgnoreCase(Type ownerObjectType, string propertyName)
+        private static PropertyInfo? GetPropertyIgnoreCase(Type ownerObjectType, string propertyName)
         {
             var property = ownerObjectType.GetProperty(propertyName);
 
@@ -87,14 +87,14 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return property;
         }
 
-        private static PropertyDescriptor GetProperty(Type ownerObjectType, string path)
+        private static PropertyDescriptor? GetProperty(Type ownerObjectType, string path)
         {
             // Path can be a simple property such as "Name" or a nested property such as "Business.Name"
             var hierarchy = new Queue<string>(path.Split('.'));
             return GetProperty(ownerObjectType, hierarchy, path);
         }
 
-        private static PropertyDescriptor GetProperty(Type ownerObjectType, Queue<string> hierarchy, string path)
+        private static PropertyDescriptor? GetProperty(Type ownerObjectType, Queue<string> hierarchy, string path)
         {
             if (hierarchy.TryDequeue(out var propertyName))
             {
@@ -152,7 +152,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
         /// <returns></returns>
         private static MemberExpression CreatePropertyExpresison<T>(T value)
         {
-            return CreatePropertyExpresison(value, typeof(T));
+            return CreatePropertyExpresison(value!, typeof(T));
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
             var wrapper = constructor.Invoke(new object[]
             {
-                convertedType
+                convertedType!
             });
 
             return Expression.Property(
@@ -189,13 +189,13 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                 case ComparisonOperator.StW:
                     return Expression.Call(
                       propertyAccessExpression,
-                      typeof(string).GetMethod(nameof(string.StartsWith), new Type[] { typeof(string) }),
+                      typeof(string).GetMethod(nameof(string.StartsWith), new Type[] { typeof(string) })!,
                       CreatePropertyExpresison(propertyQuery.Value)
                     );
                 case ComparisonOperator.NotStW:
                     var startsWith = Expression.Call(
                       propertyAccessExpression,
-                      typeof(string).GetMethod(nameof(string.StartsWith), new Type[] { typeof(string) }),
+                      typeof(string).GetMethod(nameof(string.StartsWith), new Type[] { typeof(string) })!,
                       CreatePropertyExpresison(propertyQuery.Value)
                     );
 
@@ -203,13 +203,13 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                 case ComparisonOperator.EndW:
                     return Expression.Call(
                       propertyAccessExpression,
-                      typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) }),
+                      typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) })!,
                       CreatePropertyExpresison(propertyQuery.Value)
                     );
                 case ComparisonOperator.NotEndW:
                     var endsWith = Expression.Call(
                       propertyAccessExpression,
-                      typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) }),
+                      typeof(string).GetMethod(nameof(string.EndsWith), new Type[] { typeof(string) })!,
                       CreatePropertyExpresison(propertyQuery.Value)
                     );
 
@@ -217,13 +217,13 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                 case ComparisonOperator.Ct:
                     return Expression.Call(
                       propertyAccessExpression,
-                      typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string) }),
+                      typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string) })!,
                       CreatePropertyExpresison(propertyQuery.Value)
                     );
                 case ComparisonOperator.NotCt:
                     var contains = Expression.Call(
                       propertyAccessExpression,
-                      typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string) }),
+                      typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string) })!,
                       CreatePropertyExpresison(propertyQuery.Value)
                     );
 
@@ -235,7 +235,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return Expression.Equal(propertyAccessExpression, CreatePropertyExpresison(propertyQuery.Value));
         }
 
-        private static ExpressionHelper GetNumericExpressionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static ExpressionHelper? GetNumericExpressionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (!decimal.TryParse(propertyQuery.Value, out var test))
             {
@@ -249,16 +249,16 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                 var convertMethodInfo = typeof(Convert).GetMethod(nameof(Convert.ToDecimal), new Type[]
                 {
                       propertyDescriptor.QueryableProperty.UnderlyingPropertyType
-                });
+                })!;
 
                 var roundMethodInfo = typeof(Math).GetMethod(nameof(Math.Round), new Type[]
                 {
                   typeof(decimal),
                   typeof(int)
-                });
+                })!;
 
                 var convertLeftExpression = Expression.Call(convertMethodInfo, propertyAccessExpression);
-                var convertRightExpression = Expression.Call(convertMethodInfo, CreatePropertyExpresison(propertyQuery.ParsedValue, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
+                var convertRightExpression = Expression.Call(convertMethodInfo, CreatePropertyExpresison(propertyQuery.ParsedValue!, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
 
                 // This will result to something like this:
                 // Math.Round(Convert.ToDecimal(e.SomeProperty, 0))
@@ -280,11 +280,11 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return new ExpressionHelper
             {
                 Left = propertyAccessExpression,
-                Right = CreatePropertyExpresison(propertyQuery.ParsedValue, propertyDescriptor.QueryableProperty.UnderlyingPropertyType)
+                Right = CreatePropertyExpresison(propertyQuery.ParsedValue!, propertyDescriptor.QueryableProperty.UnderlyingPropertyType)
             };
         }
 
-        private static Expression GetNumericQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static Expression? GetNumericQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             var numericHelper = GetNumericExpressionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
 
@@ -310,7 +310,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static DateExpressionHelper GetDateExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static DateExpressionHelper? GetDateExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (DateTime.TryParse(propertyQuery.Value, out var dateValue))
             {
@@ -340,7 +340,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static Expression GetDateQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static Expression? GetDateQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             var dateHelper = GetDateExpresionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
 
@@ -386,13 +386,13 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
         {
             if (propertyQuery.ComparisonOperator == ComparisonOperator.NotEq)
             {
-                return Expression.NotEqual(propertyAccessExpression, CreatePropertyExpresison(propertyQuery.ParsedValue, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
+                return Expression.NotEqual(propertyAccessExpression, CreatePropertyExpresison(propertyQuery.ParsedValue!, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
             }
 
-            return Expression.Equal(propertyAccessExpression, CreatePropertyExpresison(propertyQuery.ParsedValue, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
+            return Expression.Equal(propertyAccessExpression, CreatePropertyExpresison(propertyQuery.ParsedValue!, propertyDescriptor.QueryableProperty.UnderlyingPropertyType));
         }
 
-        private static Expression GetQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static Expression? GetQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (propertyQuery.IsValueNull)
             {
@@ -451,7 +451,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return expressionDescriptor;
         }
 
-        private static QueryExpressionDescriptor<TSource> GetQueryDescriptor<TSource>(Type tableType, QueryProperty propertyQuery, Expression parentExpression)
+        private static QueryExpressionDescriptor<TSource>? GetQueryDescriptor<TSource>(Type tableType, QueryProperty propertyQuery, Expression parentExpression)
         {
             if (propertyQuery != null && (!string.IsNullOrWhiteSpace(propertyQuery.Value) || propertyQuery.IsValueNull))
             {
@@ -505,7 +505,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
                 if (!expressionDescriptors.IsNullOrEmpty())
                 {
-                    var whereClause = GetWhereClause(expressionDescriptors, parentExpression);
+                    var whereClause = GetWhereClause(expressionDescriptors!, parentExpression);
                     itemList = itemList.Where(whereClause);
                 }
             }
@@ -526,13 +526,13 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
     class ExpressionHelper
     {
-        public Expression Left { get; set; }
-        public Expression Right { get; set; }
+        public Expression Left { get; set; } = null!;
+        public Expression Right { get; set; } = null!;
     }
 
     class DateExpressionHelper
     {
-        public ExpressionHelper StartTime { get; set; }
-        public ExpressionHelper EndTime { get; set; }
+        public ExpressionHelper StartTime { get; set; } = null!;
+        public ExpressionHelper EndTime { get; set; } = null!;
     }
 }

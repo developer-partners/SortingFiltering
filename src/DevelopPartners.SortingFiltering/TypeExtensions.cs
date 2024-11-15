@@ -91,21 +91,21 @@ namespace DeveloperPartners.SortingFiltering
             return Enum.ToObject(typeToChange, -1);
         }
 
-        public static object ChangeType(this Type t, object value)
+        public static object? ChangeType(this Type t, object value)
         {
             var typeToChange = Nullable.GetUnderlyingType(t) ?? t;
 
             if (typeToChange == typeof(Guid))
             {
                 return value != null
-                    ? new Guid(value.ToString())
+                    ? new Guid(value.ToString()!)
                     : Guid.Empty;
             }
 
             if (typeToChange == typeof(Guid?))
             {
                 return value != null
-                    ? new Guid(value.ToString())
+                    ? new Guid(value.ToString()!)
                     : default(Guid?);
             }
 
@@ -117,14 +117,14 @@ namespace DeveloperPartners.SortingFiltering
             if (typeToChange == typeof(DateOnly))
             {
                 return value != null
-                    ? DateOnly.Parse(value.ToString())
+                    ? DateOnly.Parse(value.ToString()!)
                     : default;
             }
 
             if (typeToChange == typeof(DateOnly?))
             {
                 return value != null
-                    ? DateOnly.Parse(value.ToString())
+                    ? DateOnly.Parse(value.ToString()!)
                     : default(DateOnly?);
             }
 

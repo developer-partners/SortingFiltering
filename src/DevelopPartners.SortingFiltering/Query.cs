@@ -47,7 +47,7 @@ namespace DeveloperPartners.SortingFiltering
         /// Column name to apply the filter to.
         /// </summary>
         [FromQuery(Name = "col")]
-        public string ColumnName { get; set; }
+        public string? ColumnName { get; set; }
 
         /// <summary>
         /// <para>Gets or sets the client time zone for filtering date and time columns. The default is UTC.</para>
@@ -61,7 +61,7 @@ namespace DeveloperPartners.SortingFiltering
         /// Value of this query parameter.
         /// </summary>
         [FromQuery(Name = "val")]
-        public string Value { get; set; }
+        public string? Value { get; set; }
 
         /// <summary>
         /// Tells if the <see cref="Value">Value</see> Property should be checked against database NULL.
@@ -94,7 +94,7 @@ namespace DeveloperPartners.SortingFiltering
         [XmlIgnore]
         [Newtonsoft.Json.JsonIgnore]
         [System.Text.Json.Serialization.JsonIgnore]
-        public object ParsedValue
+        public object? ParsedValue
         {
             get
             {

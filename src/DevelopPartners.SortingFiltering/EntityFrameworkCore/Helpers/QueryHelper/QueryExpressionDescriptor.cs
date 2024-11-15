@@ -6,21 +6,21 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 {
     class QueryExpressionDescriptor<TSource>
     {
-        public QueryProperty QueryProperty { get; set; }
-        public Expression Expression { get; set; }
-        public List<QueryExpressionDescriptor<TSource>> Children { get; set; }
+        public QueryProperty QueryProperty { get; set; } = null!;
+        public Expression? Expression { get; set; }
+        public List<QueryExpressionDescriptor<TSource>> Children { get; set; } = null!;
 
-        private Expression GetChildrenExpression(IEnumerable<QueryExpressionDescriptor<TSource>> children)
+        private Expression? GetChildrenExpression(IEnumerable<QueryExpressionDescriptor<TSource>> children)
         {
-            Expression resultExpression = null;
+            Expression? resultExpression = null;
 
             foreach (var child in children)
             {
                 if (resultExpression != null)
                 {
                     resultExpression = child.QueryProperty.LogicalOperator == LogicalOperator.And
-                      ? Expression.AndAlso(resultExpression, child.Expression)
-                      : Expression.OrElse(resultExpression, child.Expression);
+                      ? Expression.AndAlso(resultExpression, child.Expression!)
+                      : Expression.OrElse(resultExpression, child.Expression!);
                 }
                 else
                 {
@@ -29,7 +29,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
                 if (!child.Children.IsNullOrEmpty())
                 {
-                    resultExpression = FlattenHierarchy(resultExpression, children);
+                    resultExpression = FlattenHierarchy(resultExpression!, children);
                 }
             }
 
@@ -53,7 +53,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
         public Expression FlattenHierarchy()
         {
-            return FlattenHierarchy(this.Expression, this.Children);
+            return FlattenHierarchy(this.Expression!, this.Children);
         }
     }
 }

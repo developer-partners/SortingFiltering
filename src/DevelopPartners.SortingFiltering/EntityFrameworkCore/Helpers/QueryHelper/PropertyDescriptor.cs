@@ -7,10 +7,10 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
     {
         private Lazy<QueryablePropertyDescriptor> _queryableProperty;
 
-        public string Path { get; set; }
-        public Type OwnerObjectType { get; set; }
-        public PropertyInfo Property { get; set; }
-        public PropertyDescriptor Child { get; set; }
+        public string Path { get; set; } = null!;
+        public Type OwnerObjectType { get; set; } = null!;
+        public PropertyInfo Property { get; set; } = null!;
+        public PropertyDescriptor? Child { get; set; }
 
         public QueryablePropertyDescriptor QueryableProperty
         {

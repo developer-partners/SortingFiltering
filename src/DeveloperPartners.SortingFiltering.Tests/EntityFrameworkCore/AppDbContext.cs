@@ -29,12 +29,12 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore
         [Key]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         public int? TypeId { get; set; }
-        public ProductType Type { get; set; }
+        public ProductType? Type { get; set; }
 
         public DateTime DateCreated { get; set; }
 
@@ -56,9 +56,9 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore
     public class ProductCategory
     {
         public int ProductId { get; set; }
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
 
         public int CategoryId { get; set; }
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
     }
 }

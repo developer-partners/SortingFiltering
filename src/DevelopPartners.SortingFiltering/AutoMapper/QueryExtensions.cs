@@ -68,7 +68,7 @@ namespace DeveloperPartners.SortingFiltering.AutoMapper
             }
         }
 
-        private static string ConvertPropertyName(IMapper mapper, string propertyPath, TypeMap typeMap)
+        private static string ConvertPropertyName(IMapper mapper, string? propertyPath, TypeMap typeMap)
         {
             if (!string.IsNullOrWhiteSpace(propertyPath))
             {
@@ -125,7 +125,7 @@ namespace DeveloperPartners.SortingFiltering.AutoMapper
             return query.Sort;
         }
 
-        private static QueryFilter ConvertFilterProperties(IMapper mapper, TypeMap typeMap, IEnumerable<QueryProperty> filterToConvert, QueryProperty parent)
+        private static QueryFilter ConvertFilterProperties(IMapper mapper, TypeMap typeMap, IEnumerable<QueryProperty> filterToConvert, QueryProperty? parent)
         {
             var result = new QueryFilter();
 

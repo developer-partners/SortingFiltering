@@ -6,7 +6,7 @@ namespace DeveloperPartners.SortingFiltering
 {
     public static class ExpressionExtensions
     {
-        public static string GetMemberName(this Expression expr, bool withParent)
+        public static string GetMemberName(this Expression? expr, bool withParent)
         {
             var memberExpr = expr as MemberExpression;
 
