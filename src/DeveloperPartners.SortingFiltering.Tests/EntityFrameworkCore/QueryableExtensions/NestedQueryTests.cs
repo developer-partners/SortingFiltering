@@ -69,5 +69,60 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
             }
         }
 
+        [TestMethod]
+        public async Task MultipleAnd()
+        {
+            using (var context = CreateDContext())
+            {
+                context.Products.AddRange(
+                [
+                    new()
+                    {
+                        Name = "Test 1",
+                        DateCreated = DateTime.Now
+                    },
+                    new()
+                    {
+                        Name = "Test 2",
+                        DateCreated = DateTime.Now
+                    },
+                    new()
+                    {
+                        Name = "Test 3",
+                        DateCreated = DateTime.Now
+                    }
+                ]);
+
+                await context.SaveChangesAsync();
+
+                var query = new Query
+                {
+                    Filter = new()
+                    {
+                        new()
+                        {
+                            ColumnName = nameof(Product.Name),
+                            Children = new()
+                            {
+                                new()
+                                {
+                                    Value = "Test",
+                                    ComparisonOperator = ComparisonOperator.StW
+                                },
+                                new()
+                                {
+                                    Value = "2",
+                                    ComparisonOperator = ComparisonOperator.EndW
+                                }
+                            }
+                        }
+                    }
+                };
+
+                var products = await context.Products.Where(query.Filter).ToListAsync();
+
+                Assert.AreEqual(1, products.Count);
+            }
+        }
     }
 }

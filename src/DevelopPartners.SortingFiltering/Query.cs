@@ -111,6 +111,11 @@ namespace DeveloperPartners.SortingFiltering
             }
         }
 
+        /// <summary>
+        /// Use this for setting metadata information in a query property. You put any object here.
+        /// </summary>
+        public object? Tag { get; set; }
+
         public QueryProperty()
         {
             // Equals by default.
