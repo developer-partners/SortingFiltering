@@ -399,6 +399,11 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                 return GetNullQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
             }
 
+            if (string.IsNullOrWhiteSpace(propertyQuery.Value))
+            {
+                return Expression.Constant(true);
+            }
+
             if (propertyDescriptor.QueryableProperty.UnderlyingPropertyType == typeof(string))
             {
                 return GetStringQueryExpression(propertyQuery, propertyAccessExpression);
@@ -453,7 +458,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
 
         private static QueryExpressionDescriptor<TSource>? GetQueryDescriptor<TSource>(Type tableType, QueryProperty propertyQuery, Expression parentExpression)
         {
-            if (propertyQuery != null && (!string.IsNullOrWhiteSpace(propertyQuery.Value) || propertyQuery.IsValueNull))
+            if (propertyQuery != null)
             {
                 if (string.IsNullOrWhiteSpace(propertyQuery.ColumnName))
                 {
