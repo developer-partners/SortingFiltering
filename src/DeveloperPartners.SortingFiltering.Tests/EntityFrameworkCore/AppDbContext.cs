@@ -22,6 +22,15 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore
             modelBuilder.Entity<ProductCategory>()
                 .HasKey(p => new { p.ProductId, p.CategoryId });
         }
+
+        public static AppDbContext CreateDbContext()
+        {
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString("N"))
+                .Options;
+
+            return new AppDbContext(options);
+        }
     }
 
     public class Product
@@ -38,7 +47,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore
 
         public DateTime DateCreated { get; set; }
 
-        public DateTime? DueDate { get; set; }
+        public DateOnly? DueDate { get; set; }
     }
 
     public class ProductType

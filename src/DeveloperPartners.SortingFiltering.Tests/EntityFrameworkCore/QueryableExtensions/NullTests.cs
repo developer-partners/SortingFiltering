@@ -7,20 +7,11 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
     [TestClass]
     public class NullTests
     {
-        private AppDbContext CreateDContext()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString("N"))
-                .Options;
-
-            return new AppDbContext(options);
-        }
-
         [TestMethod]
         public async Task Equal()
         {
             //create In Memory Database
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -59,7 +50,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         public async Task NotEqual()
         {
             //create In Memory Database
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product

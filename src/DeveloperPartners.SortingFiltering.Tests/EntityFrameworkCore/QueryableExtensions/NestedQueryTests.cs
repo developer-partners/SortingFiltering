@@ -7,19 +7,10 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
     [TestClass]
     public class NestedQueryTests
     {
-        private AppDbContext CreateDContext()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString("N"))
-                .Options;
-
-            return new AppDbContext(options);
-        }
-
         [TestMethod]
         public async Task MultiplOr()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                 [
@@ -72,7 +63,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task MultipleAnd()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                 [

@@ -310,7 +310,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static DateExpressionHelper? GetDateExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static DateExpressionHelper? GetDateTimeExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
             if (DateTime.TryParse(propertyQuery.Value, out var dateValue))
             {
@@ -340,9 +340,9 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
             return null;
         }
 
-        private static Expression? GetDateQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        private static Expression? GetDateTimeQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
         {
-            var dateHelper = GetDateExpresionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
+            var dateHelper = GetDateTimeExpresionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
 
             if (dateHelper != null)
             {
@@ -367,6 +367,48 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                     Expression.GreaterThanOrEqual(dateHelper.StartTime.Left, dateHelper.StartTime.Right),
                     Expression.LessThanOrEqual(dateHelper.EndTime.Left, dateHelper.EndTime.Right)
                 );
+            }
+
+            return null;
+        }
+
+        private static ExpressionHelper? GetDateExpresionHelper(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        {
+            if (!DateTime.TryParse(propertyQuery.Value, out var dateTime))
+            {
+                return null;
+            }
+
+            var date = DateOnly.FromDateTime(dateTime);
+
+            return new ExpressionHelper
+            {
+                Left = propertyAccessExpression,
+                Right = CreatePropertyExpresison(date, propertyDescriptor.QueryableProperty.UnderlyingPropertyType)
+            };
+        }
+
+        private static Expression? GetDateQueryExpression(PropertyDescriptor propertyDescriptor, QueryProperty propertyQuery, Expression propertyAccessExpression)
+        {
+            var dateHelper = GetDateExpresionHelper(propertyDescriptor, propertyQuery, propertyAccessExpression);
+
+            if (dateHelper != null)
+            {
+                switch (propertyQuery.ComparisonOperator)
+                {
+                    case ComparisonOperator.Lt:
+                        return Expression.LessThan(dateHelper.Left, dateHelper.Right);
+                    case ComparisonOperator.Lte:
+                        return Expression.LessThanOrEqual(dateHelper.Left, dateHelper.Right);
+                    case ComparisonOperator.Gt:
+                        return Expression.GreaterThan(dateHelper.Left, dateHelper.Right);
+                    case ComparisonOperator.Gte:
+                        return Expression.GreaterThanOrEqual(dateHelper.Left, dateHelper.Right);
+                    case ComparisonOperator.NotEq:
+                        return Expression.NotEqual(dateHelper.Left, dateHelper.Right);
+                }
+
+                return Expression.Equal(dateHelper.Left, dateHelper.Right);
             }
 
             return null;
@@ -414,9 +456,14 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHe
                 return GetNumericQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
             }
 
-            if (propertyDescriptor.QueryableProperty.UnderlyingPropertyType == typeof(DateTime))
+            if (propertyDescriptor.QueryableProperty.UnderlyingPropertyType == typeof(DateOnly))
             {
                 return GetDateQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
+            }
+
+            if (propertyDescriptor.QueryableProperty.UnderlyingPropertyType == typeof(DateTime))
+            {
+                return GetDateTimeQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);
             }
 
             return GetOtherQueryExpression(propertyDescriptor, propertyQuery, propertyAccessExpression);

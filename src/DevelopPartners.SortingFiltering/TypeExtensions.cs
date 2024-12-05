@@ -116,15 +116,21 @@ namespace DeveloperPartners.SortingFiltering
 
             if (typeToChange == typeof(DateOnly))
             {
-                return value != null
-                    ? DateOnly.Parse(value.ToString()!)
+                var dateTime = value != null
+                    ? DateTime.Parse(value.ToString()!)
                     : default;
+
+                return DateOnly.FromDateTime(dateTime);
             }
 
             if (typeToChange == typeof(DateOnly?))
             {
-                return value != null
-                    ? DateOnly.Parse(value.ToString()!)
+                var dateTime = value != null
+                    ? DateTime.Parse(value.ToString()!)
+                    : default(DateTime?);
+
+                return dateTime.HasValue
+                    ? DateOnly.FromDateTime(dateTime.Value)
                     : default(DateOnly?);
             }
 

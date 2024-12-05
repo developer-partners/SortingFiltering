@@ -5,21 +5,12 @@ using DeveloperPartners.SortingFiltering.EntityFrameworkCore;
 namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.QueryableExtensions
 {
     [TestClass]
-    public class DateTests
+    public class DateTimeTests
     {
-        private AppDbContext CreateDContext()
-        {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString("N"))
-                .Options;
-
-            return new AppDbContext(options);
-        }
-
         [TestMethod]
         public async Task Equals()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -55,7 +46,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task EqualsUtc()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -92,7 +83,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task NotEqual()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -129,7 +120,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task NotEqualUtc()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -167,7 +158,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task GreaterThan()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -204,7 +195,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task GreaterThanUtc()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -242,7 +233,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task GreaterThanOrEqual()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -283,7 +274,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task GreaterThanOrEqualUtc()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -326,7 +317,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task LessThan()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -363,7 +354,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task LessThanUtc()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -401,7 +392,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task LessThanOrEqual()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
@@ -442,7 +433,7 @@ namespace DeveloperPartners.SortingFiltering.Tests.EntityFrameworkCore.Queryable
         [TestMethod]
         public async Task LessThanOrEqualUtc()
         {
-            using (var context = CreateDContext())
+            using (var context = AppDbContext.CreateDbContext())
             {
                 context.Products.AddRange(
                     new Product
