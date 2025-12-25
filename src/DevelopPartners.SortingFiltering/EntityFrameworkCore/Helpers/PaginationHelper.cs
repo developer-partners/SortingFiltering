@@ -1,5 +1,6 @@
 
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,7 +38,13 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
                 .Take(pageInfo.PageSize);
         }
 
-        internal static async Task<IQueryable<T>> PaginateAsync<T>(IOrderedQueryable<T> itemList, PageInfo pageInfo, int? pageSize)
+        internal static Task<IQueryable<T>> PaginateAsync<T>(IOrderedQueryable<T> itemList, PageInfo pageInfo, int? pageSize)
+            where T : class
+        {
+            return PaginateAsync(itemList, pageInfo, pageSize, default);
+        }
+
+        internal static async Task<IQueryable<T>> PaginateAsync<T>(IOrderedQueryable<T> itemList, PageInfo pageInfo, int? pageSize, CancellationToken cancellationToken)
             where T : class
         {
             if (pageInfo.PageNumber <= 0)
@@ -54,7 +61,7 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers
                 pageInfo.PageSize = PageInfo.DefaultPageSize;
             }
 
-            pageInfo.TotalItems = await itemList.CountAsync();
+            pageInfo.TotalItems = await itemList.CountAsync(cancellationToken);
             pageInfo.TotalPages = (int)decimal.Ceiling((pageInfo.TotalItems / pageInfo.PageSize));
 
             if (pageInfo.TotalPages > 0 && pageInfo.PageNumber > pageInfo.TotalPages)
