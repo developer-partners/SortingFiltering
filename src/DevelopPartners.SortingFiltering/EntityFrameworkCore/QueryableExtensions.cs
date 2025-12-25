@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers;
 using DeveloperPartners.SortingFiltering.EntityFrameworkCore.Helpers.QueryHelper;
@@ -46,13 +47,25 @@ namespace DeveloperPartners.SortingFiltering.EntityFrameworkCore
         public static Task<IQueryable<T>> PaginateAsync<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo)
             where T : class
         {
-            return PaginationHelper.PaginateAsync(itemList, pageInfo, default);
+            return PaginationHelper.PaginateAsync(itemList, pageInfo, default, default);
+        }
+
+        public static Task<IQueryable<T>> PaginateAsync<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo, CancellationToken cancellationToken)
+           where T : class
+        {
+            return PaginationHelper.PaginateAsync(itemList, pageInfo, default, cancellationToken);
         }
 
         public static Task<IQueryable<T>> PaginateAsync<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo, int pageSize)
            where T : class
         {
-            return PaginationHelper.PaginateAsync(itemList, pageInfo, pageSize);
+            return PaginationHelper.PaginateAsync(itemList, pageInfo, pageSize, default);
+        }
+
+        public static Task<IQueryable<T>> PaginateAsync<T>(this IOrderedQueryable<T> itemList, PageInfo pageInfo, int pageSize, CancellationToken cancellationToken)
+           where T : class
+        {
+            return PaginationHelper.PaginateAsync(itemList, pageInfo, pageSize, cancellationToken);
         }
     }
 }
